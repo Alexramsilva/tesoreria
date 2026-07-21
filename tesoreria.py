@@ -415,40 +415,41 @@ else:
         "egresos.csv",
         "text/csv"
     )
+
 #====================================================
 # RESTABLECER DATOS
 #====================================================
 
-    st.divider()
+st.divider()
 
-    st.subheader("🗑️ Restablecer tesorería")
+st.subheader("🗑️ Restablecer tesorería")
 
-    st.warning(
-        "Esta opción eliminará todos los ingresos y egresos registrados."
-    )
+st.warning(
+    "Esta opción eliminará todos los ingresos y egresos registrados."
+)
 
-    confirmar = st.checkbox(
-        "Confirmo que deseo eliminar todos los registros"
-    )
+confirmar = st.checkbox(
+    "Confirmo que deseo eliminar todos los registros"
+)
 
 
-    if confirmar:
+if confirmar:
 
-        if st.button("Restablecer datos"):
+    if st.button("Restablecer datos"):
 
-            c.execute(
-                "DELETE FROM ingresos"
-            )
+        c.execute(
+            "DELETE FROM ingresos"
+        )
 
-            c.execute(
-                "DELETE FROM egresos"
-            )
+        c.execute(
+            "DELETE FROM egresos"
+        )
 
-            conn.commit()
+        conn.commit()
 
-            st.success(
-                "La tesorería fue restablecida correctamente."
-            )
+        st.success(
+            "La tesorería fue restablecida correctamente."
+        )
 
-            st.rerun()
+        st.rerun()
 conn.close()
