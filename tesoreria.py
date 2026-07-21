@@ -214,6 +214,189 @@ with tab3:
         egresos,
         use_container_width=True
     )
+#====================================================
+# MODIFICAR REGISTROS
+#====================================================
+
+st.divider()
+
+st.subheader("✏️ Modificar registro")
+
+
+tipo_modificar = st.selectbox(
+    "Tipo de registro",
+    ["Ingreso", "Egreso"]
+)
+
+
+if tipo_modificar == "Ingreso":
+
+    datos = pd.read_sql(
+        "SELECT * FROM ingresos",
+        conn
+    )
+
+    if len(datos) > 0:
+
+        id_ingreso = st.selectbox(
+            "Seleccione ID del ingreso",
+            datos["id"]
+        )
+
+        registro = datos[
+            datos["id"] == id_ingreso
+        ].iloc[0]
+
+
+        nueva_fecha = st.date_input(
+            "Fecha",
+            value=pd.to_datetime(
+                registro["fecha"]
+            ),
+            key="mod_fecha_ing"
+        )
+
+
+        nuevo_monto = st.number_input(
+            "Monto",
+            value=float(registro["monto"]),
+            key="mod_monto_ing"
+        )
+
+
+        nueva_obs = st.text_area(
+            "Observaciones",
+            value=registro["observaciones"],
+            key="mod_obs_ing"
+        )
+
+
+        if st.button("Actualizar ingreso"):
+
+            c.execute("""
+            UPDATE ingresos
+            SET fecha=?,
+                monto=?,
+                observaciones=?
+            WHERE id=?
+            """,
+            (
+            nueva_fecha.strftime("%Y-%m-%d"),
+            nuevo_monto,
+            nueva_obs,
+            id_ingreso
+            ))
+
+            conn.commit()
+
+            st.success(
+                "Ingreso actualizado correctamente"
+            )
+
+            st.rerun()
+
+    else:
+        st.info("No existen ingresos registrados")
+
+
+else:
+
+    datos = pd.read_sql(
+        "SELECT * FROM egresos",
+        conn
+    )
+
+
+    if len(datos) > 0:
+
+        id_egreso = st.selectbox(
+            "Seleccione ID del egreso",
+            datos["id"]
+        )
+
+
+        registro = datos[
+            datos["id"] == id_egreso
+        ].iloc[0]
+
+
+        nueva_fecha = st.date_input(
+            "Fecha",
+            value=pd.to_datetime(
+                registro["fecha"]
+            ),
+            key="mod_fecha_egr"
+        )
+
+
+        nueva_categoria = st.selectbox(
+            "Categoría",
+            [
+            "Jabón",
+            "Fabuloso",
+            "Cloro",
+            "Azúcar",
+            "Nescafé",
+            "Té",
+            "Distrito",
+            "Otros"
+            ],
+            index=[
+            "Jabón",
+            "Fabuloso",
+            "Cloro",
+            "Azúcar",
+            "Nescafé",
+            "Té",
+            "Distrito",
+            "Otros"
+            ].index(registro["categoria"])
+        )
+
+
+        nuevo_monto = st.number_input(
+            "Monto",
+            value=float(registro["monto"]),
+            key="mod_monto_egr"
+        )
+
+
+        nueva_obs = st.text_area(
+            "Observaciones",
+            value=registro["observaciones"],
+            key="mod_obs_egr"
+        )
+
+
+        if st.button("Actualizar egreso"):
+
+            c.execute("""
+            UPDATE egresos
+            SET fecha=?,
+                categoria=?,
+                monto=?,
+                observaciones=?
+            WHERE id=?
+            """,
+            (
+            nueva_fecha.strftime("%Y-%m-%d"),
+            nueva_categoria,
+            nuevo_monto,
+            nueva_obs,
+            id_egreso
+            ))
+
+
+            conn.commit()
+
+            st.success(
+                "Egreso actualizado correctamente"
+            )
+
+            st.rerun()
+
+    else:
+        st.info("No existen egresos registrados")
 
     excel_ing = ingresos.to_csv(index=False).encode("utf-8")
 
